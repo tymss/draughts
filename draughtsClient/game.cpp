@@ -16,6 +16,8 @@ QList<QPoint> game::available(int x, int y)
 
 void game::deal(int x1,int y1,int x2,int y2)
 {
+    sound=new QSound(":/sound/sound.wav",this);
+    sound->play();
     int first=y1*5+x1/2+1,next=y2*5+x2/2+1;
     emit showMes(QString("%1-%2").arg(first).arg(next));
     if(x1-x2==1||x1-x2==-1)
@@ -32,8 +34,10 @@ void game::deal(int x1,int y1,int x2,int y2)
             yy+=(y2-y1)/qAbs(y2-y1);
             if(myState[xx][yy].team)
             {
-                myState[xx][yy].team=0;
-                myState[xx][yy].isking=0;
+                if(myState[x1][y1].team==1)
+                    myState[xx][yy].team=3;
+                else
+                    myState[xx][yy].team=0;
             }
         }
         myState[x2][y2]=myState[x1][y1];
@@ -77,6 +81,12 @@ void game::deal(int x1,int y1,int x2,int y2)
         }
         if(mt[x2][y2]->child->isEmpty())
         {
+            for(int i=0;i<10;i++)
+            for(int j=0;j<10;j++)
+            {
+                if(myState[i][j].team==3)
+                    myState[i][j].team=0;
+            }
             mt[x2][y2]->killing=0;
             if(y2==0)
                 myState[x2][y2].isking=1;
@@ -87,6 +97,7 @@ void game::deal(int x1,int y1,int x2,int y2)
     }
     emit display();
 }
+
 game::game()
 {
     for(int j=0;j<10;j++)
@@ -107,23 +118,6 @@ game::game()
                 myState[i][j].team=1;
         lastState[i][j]=myState[i][j];
         mt[i][j]=new methodTree(i,j);
-    }
-    for(int i=1;i<10;i+=2)
-    {
-        if(i!=9)
-        {
-            methodTree *m1,*m2;
-            m1=new methodTree(i-1,5);
-            mt[i][6]->child->append(m1);
-            m2=new methodTree(i+1,5);
-            mt[i][6]->child->append(m2);
-        }
-        else
-        {
-            methodTree *m1;
-            m1=new methodTree(i-1,5);
-            mt[i][6]->child->append(m1);
-        }
     }
     socket=new QTcpSocket(this);
     connect(socket,SIGNAL(readyRead()),this,SLOT(readMes()));
@@ -175,8 +169,8 @@ void game::readMes()
         QMessageBox mesbox(QMessageBox::NoIcon, "求和申请", "对方申请求和", QMessageBox::Yes | QMessageBox::No,NULL);
         if(mesbox.exec()==QMessageBox::Yes)
         {
-            emit accept();
             sendMes("accept");
+            emit accept();
         }
         else
             sendMes("refuse");
@@ -215,7 +209,11 @@ void game::connecting(QString ip, QString port)
 {
     socket->connectToHost(QHostAddress(ip),port.toInt());
     if(socket->waitForConnected())
+    {
+        sound=new QSound(":/sound/enter.wav",this);
+        sound->play();
         emit con_success();
+    }
 }
 
 void game::sendMes(QString mes)
@@ -229,7 +227,7 @@ void game::sendMes(QString mes)
     out<<(quint16)(order.size()-sizeof(quint16));
     socket->write(order);
     socket->waitForBytesWritten();
-    QTime dieTime = QTime::currentTime().addMSecs(100);
+    QTime dieTime = QTime::currentTime().addMSecs(50);
     while( QTime::currentTime()<dieTime )
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }

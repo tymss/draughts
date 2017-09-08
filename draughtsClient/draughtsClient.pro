@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += network
+QT       += multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = draughtsClient
@@ -35,3 +36,6 @@ HEADERS  += widget.h \
     dlg.h
 
 FORMS    += widget.ui
+
+RESOURCES += \
+    resource.qrc

@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QtGlobal>
 #include <QTime>
+#include <QSound>
 class state
 {
 public:
@@ -30,6 +31,7 @@ private:
     void sendMes(QString);
     void getmethod();
     void trymethod(int x,int y,methodTree* tree,bool ischild,bool);
+    QSound *sound;
 public:
     game();
     ~game();
@@ -42,6 +44,7 @@ private slots:
     void readMes();
     void beg();
     void giveup();
+    void listening(int);
 signals:
     void display();
     void finish();

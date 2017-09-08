@@ -29,6 +29,7 @@ private:
     QTextEdit *info;
     QLabel *infol;
     QPoint chosen;
+    QSound *sound;
     game *gm;
     dlg *dialog;
     bool yourturn=0;

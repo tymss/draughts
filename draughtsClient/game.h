@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QtGlobal>
 #include <QTime>
+#include <QSound>
 class state
 {
 public:
@@ -28,6 +29,7 @@ private:
     quint16 blocksize=0;
     void sendMes(QString);
     void getmethod();
+    QSound *sound;
     void trymethod(int x,int y,methodTree* tree,bool ischild,bool);
 public:
     game();

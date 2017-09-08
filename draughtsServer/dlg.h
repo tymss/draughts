@@ -9,17 +9,21 @@
 #include <QList>
 #include <QHostAddress>
 #include <QHostInfo>
+#include <QPalette>
 class dlg:public QDialog
 {
     Q_OBJECT
 public:
     dlg(QWidget *parent=0);
 private:
-    QPushButton *closing;
+    QPushButton *closing,*connecting;
     QLineEdit *ip,*port;
     QLabel *ipL,*portL;
+private slots:
+    void to_connect();
 signals:
     void to_close();
+    void connection(int);
 };
 
 #endif // DLG_H

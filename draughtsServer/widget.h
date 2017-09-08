@@ -32,6 +32,7 @@ private:
     game *gm;
     dlg *dialog;
     bool yourturn=0;
+    QSound *sound;
 signals:
     void trans(int,int,int,int);
     void gup(int);

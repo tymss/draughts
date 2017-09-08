@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>image1.jpg</file>
+        <file>icon.png</file>
+        <file>image2.jpg</file>
+    </qresource>
+    <qresource prefix="/sound">
+        <file>sound.wav</file>
+        <file>enter.wav</file>
+        <file>draw.wav</file>
+        <file>fail.wav</file>
+        <file>win.wav</file>
+    </qresource>
+</RCC>

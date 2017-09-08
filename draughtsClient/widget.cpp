@@ -19,11 +19,31 @@ Widget::Widget(QWidget *parent) :
     info=new QTextEdit(this);
     info->setFixedSize(200,250);
     info->move(750,400);
-    info->setEnabled(false);
     infol=new QLabel("游戏记录:",this);
     infol->setFixedSize(200,40);
     infol->move(750,360);
     dialog=new dlg(this);
+    QPalette pal;
+    pal.setBrush(QPalette::Background,QBrush(QPixmap(":/image/image2.jpg")));
+    setPalette(pal);
+    draw->setStyleSheet("QPushButton{background-color:black;\
+                        color: white;   border-radius: 10px;  border: 0px;}"
+                        "QPushButton:hover{background-color:rgb(207,207,207); color: black;}"
+                        "QPushButton:pressed{background-color:gray;color:white}");
+    giveup->setStyleSheet("QPushButton{background-color:black;\
+                          color: white;   border-radius: 10px;  border: 0px;}"
+                          "QPushButton:hover{background-color:rgb(207,207,207); color: black;}"
+                          "QPushButton:pressed{background-color:gray;color:white}");
+    QFont font;
+    font.setFamily("华文琥珀");
+    font.setPointSize(10);
+    giveup->setFont(font);
+    draw->setFont(font);
+    infol->setFont(font);
+    font.setFamily("幼圆");
+    font.setBold(true);
+    info->setFont(font);
+    info->setStyleSheet("border:3px solid #000000;border-radius:10px;");
     connect(this,SIGNAL(trans(int,int,int,int)),gm,SLOT(deal(int,int,int,int)));
     connect(gm,SIGNAL(display()),this,SLOT(repaint()));
     connect(gm,SIGNAL(showMes(QString)),this,SLOT(showMes(QString)));
@@ -31,8 +51,8 @@ Widget::Widget(QWidget *parent) :
     connect(gm,SIGNAL(finish()),this,SLOT(finish()));
     connect(gm,SIGNAL(defeat(int)),this,SLOT(fail(int)));
     connect(gm,SIGNAL(success(int)),this,SLOT(win(int)));
-    connect(giveup,SIGNAL(clicked(bool)),this,SLOT(givingup()));
     connect(giveup,SIGNAL(clicked(bool)),gm,SLOT(giveup()));
+    connect(giveup,SIGNAL(clicked(bool)),this,SLOT(givingup()));
     connect(gm,SIGNAL(accept()),this,SLOT(nowin()));
     connect(draw,SIGNAL(clicked(bool)),gm,SLOT(beg()));
     connect(dialog,SIGNAL(to_close()),this,SLOT(deleteLater()));
@@ -49,7 +69,7 @@ Widget::~Widget()
 void Widget::paintEvent(QPaintEvent *event)
 {
     QPainter *paint=new QPainter(this);
-    paint->setPen(QPen(Qt::black,2));
+    paint->setPen(QPen(Qt::black,3));
     paint->drawRect(50,50,600,600);
     for(int j=0;j<10;j++)
     for(int i=0;i<10;i++)
@@ -57,42 +77,41 @@ void Widget::paintEvent(QPaintEvent *event)
         if(j%2==0)
         {
             if(i%2==0)
-                paint->setBrush(Qt::NoBrush);
+                paint->setBrush(QBrush(Qt::white));
             else
-                paint->setBrush(QBrush(Qt::lightGray));
+                paint->setBrush(QBrush(Qt::gray));
         }
         else
         {
             if(i%2!=0)
-                paint->setBrush(Qt::NoBrush);
+                paint->setBrush(QBrush(Qt::white));
             else
-                paint->setBrush(QBrush(Qt::lightGray));
+                paint->setBrush(QBrush(Qt::gray));
         }
         paint->drawRect(50+i*60,50+j*60,60,60);
     }
-    paint->setPen(Qt::NoPen);
+    paint->setPen(QPen(Qt::white,1));
     for(int i=0;i<10;i++)
     for(int j=0;j<10;j++)
     {
         if(gm->chessman(i,j))
         {
-            if(gm->chessman(i,j)==2)
-                paint->setBrush(QBrush(Qt::black));
-            else
+            if(gm->chessman(i,j)==1)
                 paint->setBrush(QBrush(Qt::darkRed));
+            else
+                paint->setBrush(QBrush(Qt::black));
             paint->drawEllipse(QPoint(80+i*60,80+j*60),27,27);
             if(gm->isking(i,j))
             {
-                paint->setPen(QPen(Qt::yellow,3));
-                paint->drawEllipse(QPoint(80+i*60,80+j*60),10,10);
-                paint->setPen(Qt::NoPen);
+                QPixmap pm(":/image/icon.png");
+                paint->drawPixmap(50+60*i,40+60*j,60,85,pm);
             }
             if(yourturn&&!gm->available(i,j).isEmpty())
             {
-                paint->setPen(QPen(Qt::white));
-                paint->drawLine(80+i*60,75+j*60,80+i*60,85+j*60);
-                paint->drawLine(75+i*60,80+j*60,85+i*60,80+j*60);
-                paint->setPen(Qt::NoPen);
+                paint->setPen(QPen(Qt::white,4));
+                paint->drawLine(80+i*60,70+j*60,80+i*60,90+j*60);
+                paint->drawLine(70+i*60,80+j*60,90+i*60,80+j*60);
+                paint->setPen(QPen(Qt::white,1));
             }
         }
     }
@@ -167,6 +186,8 @@ void Widget::givingup()
 void Widget::fail(int w)
 {
     finish();
+    sound=new QSound(":/sound/fail.wav",this);
+    sound->play();
     QString sinfo;
     info->append("你输了");
     if(w==0)
@@ -182,6 +203,8 @@ void Widget::fail(int w)
 void Widget::win(int w)
 {
     finish();
+    sound=new QSound(":/sound/win.wav",this);
+    sound->play();
     QString sinfo;
     info->append("你赢了");
     if(w==0)
@@ -196,6 +219,8 @@ void Widget::win(int w)
 void Widget::nowin()
 {
     finish();
+    sound=new QSound(":/sound/draw.wav",this);
+    sound->play();
     QMessageBox mesbox(QMessageBox::NoIcon,QString("游戏结束"),QString("本局为和局。"));
     mesbox.exec();
 }

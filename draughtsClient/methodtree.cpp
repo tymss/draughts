@@ -64,5 +64,4 @@ void methodTree::getl()
     child->clear();
     for(int j=0;j<tr.size();j++)
         child->append(tr.at(j));
-    qDebug()<<child->size();
 }

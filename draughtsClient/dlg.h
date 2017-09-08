@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QDesktopWidget>
 #include <QApplication>
+#include <QPalette>
 class dlg:public QDialog
 {
     Q_OBJECT
